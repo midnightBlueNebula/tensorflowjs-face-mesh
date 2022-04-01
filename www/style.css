@@ -19,10 +19,20 @@
 
 body {
   font-family: helvetica, arial, sans-serif;
-  margin: 2em;
 }
 
 h1 {
   font-style: italic;
   color: #FF6F00;
+  text-align: center;
+}
+
+#video-div{
+  width: 640px;
+  height: 360px;
+  margin: auto;
+}
+
+.invisible{
+  display: none;
 }

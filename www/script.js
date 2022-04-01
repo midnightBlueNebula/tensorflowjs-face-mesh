@@ -15,38 +15,70 @@
  * =============================================================================
  */
 
-
 //const status = document.getElementById('status');
 //if (status) {
 //  status.innerText = 'Loaded TensorFlow.js - version: ' + tf.version.tfjs;
 //}
+var dotStorage = [];
 
+const BODY = document.querySelector("body");
+const STATUS = document.querySelector("#status");
+const VIDEO_DIV = document.querySelector("#video-div");
 const VIDEO = document.querySelector("video");
 const INPUT = document.querySelector("input");
 
-const handleUpload = (event) => {
-  VIDEO.src = URL.createObjectURL(event.target.files[0]);
-  VIDEO.onload = () => {
-      URL.revokeObjectURL(VIDEO.src) // free memory
-  }
-}
+const addDotsOnVideo = (x, y, z) => {
+  let dot = document.createElement("div");
 
-INPUT.addEventListener("input", handleUpload);
+  dot.style.margin = "0px";
+  dot.style.borderRadius = "50%";
+  dot.style.width = "5px";
+  dot.style.height = "5px";
+  dot.style.backgroundColor = "lightgreen";
+  dot.style.position = "absolute";
+  dot.style.left = x + "px";
+  dot.style.top = y + "px";
 
-async function main() {
-  // Load the MediaPipe Facemesh package.
-  const model = await faceLandmarksDetection.load(
-    faceLandmarksDetection.SupportedPackages.mediapipeFacemesh);
+  VIDEO_DIV.appendChild(dot);
+  dotStorage.push(dot);
+};
 
-  // Pass in a video stream (or an image, canvas, or 3D tensor) to obtain an
-  // array of detected faces from the MediaPipe graph. If passing in a video
-  // stream, a single prediction per frame will be returned.
-  const predictions = await model.estimateFaces({
-    input: VIDEO
-  });
+const removeDotsFromVideo = () => {
+  dotStorage.forEach((dot) => {
+    VIDEO_DIV.removeChild(dot);
+  })
+  
+  dotStorage.splice(0);
+};
 
-  if (predictions.length > 0) {
-    /*
+tf.ready().then(() => {
+  STATUS.innerText = "TensorFlow.js loaded!";
+  VIDEO_DIV.classList.remove("invisible");
+
+  const handleUpload = (event) => {
+    VIDEO.src = URL.createObjectURL(event.target.files[0]);
+    VIDEO.onload = () => {
+      URL.revokeObjectURL(VIDEO.src); // free memory
+    };
+  };
+
+  INPUT.addEventListener("input", handleUpload);
+
+  const main = async () => {
+    // Load the MediaPipe Facemesh package.
+    const model = await faceLandmarksDetection.load(
+      faceLandmarksDetection.SupportedPackages.mediapipeFacemesh
+    );
+
+    // Pass in a video stream (or an image, canvas, or 3D tensor) to obtain an
+    // array of detected faces from the MediaPipe graph. If passing in a video
+    // stream, a single prediction per frame will be returned.
+    const predictions = await model.estimateFaces({
+      input: VIDEO,
+    });
+
+    if (predictions.length > 0) {
+      /*
     `predictions` is an array of objects describing each detected face, for example:
 
     [
@@ -76,21 +108,24 @@ async function main() {
       }
     ]
     */
+      removeDotsFromVideo();
 
-    for (let i = 0; i < predictions.length; i++) {
-      const keypoints = predictions[i].scaledMesh;
+      for (let i = 0; i < predictions.length; i++) {
+        const keypoints = predictions[i].scaledMesh;
 
-      // Log facial keypoints.
-      for (let i = 0; i < keypoints.length; i++) {
-        const [x, y, z] = keypoints[i];
+        // Log facial keypoints.
+        for (let i = 0; i < keypoints.length; i++) {
+          const [x, y, z] = keypoints[i];
 
-        console.log(`Keypoint ${i}: [${x}, ${y}, ${z}]`);
+          console.log(`Keypoint ${i}: [${x}, ${y}, ${z}]`);
+
+          addDotsOnVideo(x, y, z);
+        }
       }
     }
-  }
-}
 
-VIDEO.addEventListener("play", main);
+    window.requestAnimationFrame(main);
+  };
 
-
-
+  VIDEO.addEventListener("play", main);
+});

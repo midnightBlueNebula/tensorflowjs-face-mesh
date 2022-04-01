@@ -10,22 +10,26 @@
   </head>  
   <body>
     <h1>TensorFlow.js Face Mesh</h1>
+    <center><p id="status">Waiting TensorFlow.js to load...</p></center>
+    <div id="video-div" class="invisible">
+      <video loop muted height="360" width="640" controls >
+        Your browser does not support the video tag.
+      </video>
+      <p style="display: inline-block">Upload a video to generate face mesh.</p>
+      <input type="file" style="display: inline-block; margin-left:120px;" />
+    </div>
     
-    <p id="status">Awaiting TF.js load</p>
     
-    <video muted height="360" width="640" controls >
-      Your browser does not support the video tag.
-    </video>
     
-    <input type="file" />
+    
     
     <!-- Require the peer dependencies of face-landmarks-detection. -->
     <script src="https://unpkg.com/@tensorflow/tfjs-core@2.4.0/dist/tf-core.js"></script>
     <script src="https://unpkg.com/@tensorflow/tfjs-converter@2.4.0/dist/tf-converter.js"></script>
     
     <!-- You must explicitly require a TF.js backend if you're not using the tfjs union bundle. -->
-    <script src="https://unpkg.com/@tensorflow/tfjs-backend-webgl@2.4.0/dist/tf-backend-webgl.js"></script>
-    <!-- Alternatively you can use the WASM backend: <script src="https://unpkg.com/@tensorflow/tfjs-backend-wasm@2.4.0/dist/tf-backend-wasm.js"></script> -->
+    
+    <script src="https://unpkg.com/@tensorflow/tfjs-backend-wasm@2.4.0/dist/tf-backend-wasm.js"></script> 
 
     <!-- Require face-landmarks-detection itself. -->
     <script src="https://unpkg.com/@tensorflow-models/face-landmarks-detection@0.0.1/dist/face-landmarks-detection.js"></script>
